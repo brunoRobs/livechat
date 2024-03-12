@@ -4,11 +4,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Entrar</title>
+        <title>LiveChat</title>
         <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
             type="image/png">
         <style>
-            body {
+            #app {
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
@@ -59,6 +59,12 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
+
+            .login-button:disabled {
+                background-color: #898989;
+                color: #fff;
+                cursor: default;
+            }
         </style>
     </head>
 
@@ -67,40 +73,32 @@
             <div class="login-container">
                 <div class="input-field">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" v-model="username">
+                    <input type="text" id="username">
                 </div>
 
-                <button class="login-button" @click="login()">Enter</button>
+                <button class="login-button" onclick="login()">Enter</button>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
-
         <script>
-            const app = Vue.createApp({
-                data() {
-                    return {
-                        username: ''
-                    };
-                },
-                methods: {
-                    login() {
-                        fetch('/chat', {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'User': this.username
-                            }
-                        }).then(response => {
-                            if (!response.ok) alert('Nome já em uso');
-                        });
-                    }
-                }
-            });
-
-            app.mount('#app')
+            function login() {
+                let username = document.getElementById('username').value
+                if (username) {
+                    fetch('/chat', {
+                        method: 'GET',
+                        headers: {
+                            'User': username,
+                        }
+                    }).then(response => {
+                        if (!response.ok) alert(response.statusText);
+                        else {
+                            localStorage.setItem('User', username)
+                            window.location.href = response.url
+                        }
+                    })
+                } else alert('Username cannot be blank!!!')
+            }
         </script>
-
     </body>
 
 </html>

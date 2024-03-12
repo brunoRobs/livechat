@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat</title>
+        <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
+            type="image/png">
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            #app {
+                display: flex;
+                flex-direction: column;
+                width: fit-content;
+                padding: 20px;
+            }
+
+            #chat-box {
+                padding: 20px 0;
+                border: 1px solid #ccc;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                resize: none;
+                outline: none;
+            }
+
+            #input-box {
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #message-input {
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            #command {
+                padding: 20px;
+                display: flex;
+                justify-content: space-evenly;
+            }
+
+            .command-button {
+                padding: 10px;
+                background-color: #4CAF50;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .command-button:disabled {
+                background-color: #686868;
+                cursor: default;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div id="app">
+            <textarea name="chat-box" id="chat-box" cols="40" rows="20" readonly></textarea>
+            <div id="input-box">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message">
+                <div id="command">
+                    <button id="exit-button" class="command-button" @click="exit()">Exit</button>
+                    <button id="send-button" class="command-button" @click="send()" :disabled="isEmpty">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        message: ''
+                    };
+                },
+                computed: {
+                    isEmpty() {
+                        return !this.message
+                    },
+                    // chatContent() {
+
+                    // }
+                },
+                methods: {
+                    send() {
+                        let username = localStorage.getItem('User');
+                        fetch('/send', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'text/plain',
+                                'User': username
+                            },
+                            body: this.message
+                        }).then(response => {
+                            if (response.ok) return response.text();
+                        }).then(text => document.getElementById('chat-box').value += text);
+                        this.message = '';
+                    },
+                    exit() {
+                        let username = localStorage.getItem('User');
+                        fetch('/exit', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'User': username
+                            }
+                        }).then(response => {
+                            localStorage.removeItem('User');
+                            window.location.href = '/';
+                        });
+                    }
+                },
+                destroyed() {
+                    this.exit();
+                }
+            });
+
+            app.mount('#app')
+        </script>
+
+    </body>
+
+</html>
