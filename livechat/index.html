@@ -64,7 +64,7 @@
             <div class="login-container">
                 <div class="input-field">
                     <label for="username">Usuário:</label>
-                    <input type="text" id="username" v-model="body.name">
+                    <input type="text" id="username" v-model="name">
                 </div>
 
                 <button class="login-button" @click="login()">Entrar</button>
@@ -77,18 +77,18 @@
             const app = Vue.createApp({
                 data() {
                     return {
-                        body: { name: '' }
+                        name: ''
                     };
                 },
                 methods: {
                     login() {
                         fetch('/chat', {
-                            method: 'POST',
+                            method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Cache-Control': 'no-store'
+                                'Cache-Control': 'no-store',
+                                'User': this.name
                             },
-                            body: JSON.stringify(this.body)
                         }).then(response => {
                             if (!response.ok) alert('Nome já em uso');
                         });
