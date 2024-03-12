@@ -1,82 +1,61 @@
+import http.server
 import socket
-import threading
-import json
+import socketserver
+import os
 
-users = {}
+server_address = (socket.gethostbyname(socket.gethostname()), 8000)
 
-def handler(client_socket, client_address_ip):
-    while True: 
-        request = client_socket.recv(1024).decode('utf-8')
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    pass
 
-        print(request)
+class Handler(http.server.SimpleHTTPRequestHandler): 
+    def do_GET(self): 
+        server_paths = ['/', '/chat']
 
-        path = request.split('\r\n', 1)[0].split(' ')[1][1:]
+        request_path = self.path
 
-        headers, body = request.split('\r\n\r\n', 1)
+        file_path = ''
 
-        if body: 
-            body = json.loads(body)
+        response = ''
 
-        try:
-            if not path: 
-                with open('livechat/index.html', 'rb') as file: 
-                    content = file.read()
-
-                response = f"HTTP/1.1 200 OK\r\nCache-Control: no-store, no-cache, must-revalidate, proxy-revalidate\r\nPragma: no-cache\r\nExpires: 0\r\nContent-Length: {len(content)}\n\n{content.decode('utf-8')}"
-
-            elif path == 'chat': 
-                with open('livechat/chat.html', 'rb') as file: 
-                    content = file.read()
-
-                if users.get(client_address_ip): 
-                    'HTTP/1.1 409 Conflict\r\nContent-Length: 0\n\n'
-
-                else: 
-                    users[client_address_ip] = body['name']
-                    response = f"HTTP/1.1 200 OK\r\nCache-Control: no-store, no-cache, must-revalidate, proxy-revalidate\r\nPragma: no-cache\r\nExpires: 0\r\nContent-Length: {len(content)}\n\n{content.decode('utf-8')}"           
+        if request_path in server_paths: 
+            if request_path == '/': 
+                file_path = 'livechat/index.html'
 
             else: 
-                if path == 'send':
-                    response = f"HTTP/1.1 200 OK\r\nContent-Length: 0\n\n"
+                file_path = 'livechat/chat.html'
 
-                elif path == 'download':
-                    response = 'HTTP/1.1 200 OK\r\nContent-Length: 0\n\n'
+        else: 
+            file_path = 'livechat/file_not_found.html'
 
-                elif path == 'exit': 
-                    client_socket.close()
-                    break
+        try: 
+            response = open(file_path).read()
 
-                else:
-                    response = 'HTTP/1.1 501 Not Implemented\r\nContent-Length: 0\n\n'
-                    
-        except FileNotFoundError:
-            response = 'HTTP/1.1 404 Not Found\r\nContent-Length: 0\n\n' 
+            self.send_response(200)
+            
+        except: 
+            response = open(file_path).read()
 
-        client_socket.sendall(response.encode('utf-8'))
+            self.send_response(404)
 
-def start_server(): 
-    host = socket.gethostbyname(socket.gethostname())
+        self.end_headers()
 
-    port = 8080
+        self.wfile.write(bytes(response, 'utf-8'))
+    
+    def do_POST(self): 
+        length = int(self.headers['Content-Length'])
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        data_bytes = self.rfile.read(length)
 
-    message = f"Running on {host}:{port}"
+        data_message = data_bytes.decode('utf-8')
 
-    server_socket.bind((host, port))
+        with open('livechat/chat.txt', 'a') as file:
+            file.write(f"{data_message}\n\n")
 
-    server_socket.listen(20)
+        self.send_response(200)
 
-    print(message)
+        self.end_headers()
 
-    while True: 
-        client_socket, client_address = server_socket.accept()
-
-        if not users.get(client_address[0]): 
-            users[client_address[0]] = ''
-
-            print(f"{client_address[0]} is here")
-
-            threading.Thread(target=handler, args=(client_socket, client_address[0], )).start()
-
-start_server()
+with ThreadedHTTPServer(server_address, Handler) as httpd:
+    print(f"Running in {server_address[0]}:{server_address[1]}")
+    httpd.serve_forever()
