@@ -4,80 +4,138 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chat</title>
+        <title>LiveChat</title>
         <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
             type="image/png">
         <style>
             body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
                 display: flex;
-                flex-direction: column;
-                height: 100vh;
                 justify-content: center;
                 align-items: center;
-                background-color: #f4f4f4;
+                height: 100vh;
+                margin: 0;
+            }
+
+            #app {
+                display: flex;
+                flex-direction: column;
+                width: fit-content;
+                padding: 20px;
             }
 
             #chat-box {
-                width: 400px;
-                height: 300px;
+                padding: 20px 10px;
                 border: 1px solid #ccc;
-                overflow-y: scroll;
-                padding: 10px;
                 background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                resize: none;
+                outline: none;
             }
 
             #input-box {
-                width: 400px;
-                margin-top: 10px;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
             }
 
             #message-input {
-                width: 80%;
                 padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
             }
 
-            #send-button {
-                width: 18%;
-                padding: 8px;
+            #command {
+                padding: 20px;
+                display: flex;
+                justify-content: space-evenly;
+            }
+
+            .command-button {
+                padding: 10px;
                 background-color: #4CAF50;
                 color: #fff;
                 border: none;
+                border-radius: 4px;
                 cursor: pointer;
+            }
+
+            .command-button:hover {
+                background-color: #45a049;
+            }
+
+            .command-button:disabled {
+                background-color: #686868;
+                cursor: default;
             }
         </style>
     </head>
 
     <body>
 
-        <div id="chat-box"></div>
-
-        <div id="input-box">
-            <input type="text" id="message-input" placeholder="Digite sua mensagem...">
-            <button id="send-button" onclick="sendMessage()">Enviar</button>
+        <div id="app">
+            <textarea name="chat-box" id="chat-box" cols="40" rows="20" readonly></textarea>
+            <div id="input-box">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message"
+                    @keydown.enter="pressEnter">
+                <div id="command">
+                    <button id="exit-button" class="command-button" @click="exit()">Exit</button>
+                    <button id="send-button" class="command-button" @click="send()" :disabled="isEmpty">Send</button>
+                </div>
+            </div>
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+
         <script>
-            function sendMessage() {
-                var messageInput = document.getElementById('message-input');
-                var chatBox = document.getElementById('chat-box');
-
-                var message = messageInput.value;
-
-                if (message.trim() !== '') {
-                    var newMessage = document.createElement('div');
-                    newMessage.textContent = message;
-                    chatBox.appendChild(newMessage);
-
-                    // Limpar a caixa de texto após enviar a mensagem
-                    messageInput.value = '';
-
-                    // Rolar automaticamente para a última mensagem
-                    chatBox.scrollTop = chatBox.scrollHeight;
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        message: ''
+                    };
+                },
+                computed: {
+                    isEmpty() {
+                        return !this.message
+                    }
+                },
+                methods: {
+                    pressEnter(event) {
+                        if (event.key === 'Enter') this.send();
+                    },
+                    send() {
+                        let username = localStorage.getItem('User');
+                        if (username) {
+                            fetch('/send', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'text/plain',
+                                    'User': username
+                                },
+                                body: this.message
+                            }).then(response => {
+                                if (response.ok) return response.text();
+                            }).then(text => document.getElementById('chat-box').value += text);
+                            this.message = '';
+                        } else window.location.href = '/'
+                    },
+                    exit() {
+                        let username = localStorage.getItem('User');
+                        fetch('/exit', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'User': username
+                            }
+                        }).then(response => {
+                            localStorage.removeItem('User');
+                            window.location.href = '/';
+                        });
+                    }
                 }
-            }
+            });
+
+            app.mount('#app')
         </script>
 
     </body>
