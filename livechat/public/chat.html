@@ -60,6 +60,10 @@
                 cursor: pointer;
             }
 
+            .command-button:hover {
+                background-color: #45a049;
+            }
+
             .command-button:disabled {
                 background-color: #686868;
                 cursor: default;
@@ -72,7 +76,8 @@
         <div id="app">
             <textarea name="chat-box" id="chat-box" cols="40" rows="20" readonly></textarea>
             <div id="input-box">
-                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message"
+                    @keydown.enter="pressEnter">
                 <div id="command">
                     <button id="exit-button" class="command-button" @click="exit()">Exit</button>
                     <button id="send-button" class="command-button" @click="send()" :disabled="isEmpty">Send</button>
@@ -111,6 +116,9 @@
                     // }
                 },
                 methods: {
+                    pressEnter(event) {
+                        if (event.key === 'Enter') this.send();
+                    },
                     send() {
                         let username = localStorage.getItem('User');
                         fetch('/send', {

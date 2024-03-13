@@ -81,11 +81,22 @@
                     <input type="text" id="username">
                 </div>
 
-                <button class="login-button" onclick="login()">Enter</button>
+                <button class="login-button" id="button" onclick="login()">Enter</button>
             </div>
         </div>
 
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.getElementById('username');
+                var button = document.getElementById('button');
+
+                input.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        button.click();
+                    }
+                });
+            });
+
             function login() {
                 let username = document.getElementById('username').value
                 if (username) {
