@@ -24,7 +24,7 @@
             }
 
             #chat-box {
-                padding: 20px 0;
+                padding: 20px 10px;
                 border: 1px solid #ccc;
                 background-color: #fff;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -84,6 +84,19 @@
 
         <script>
             const app = Vue.createApp({
+                setup() {
+                    const handleBeforeUnload = () => {
+                        let username = localStorage.getItem('User');
+                        fetch('/exit', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'User': username
+                            }
+                        });
+                    };
+                    window.addEventListener('beforeunload', handleBeforeUnload);
+                },
                 data() {
                     return {
                         message: ''
