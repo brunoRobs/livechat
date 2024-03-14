@@ -88,6 +88,12 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
         <script>
+            const ws = new WebSocket('ws://192.168.0.5:9090');
+
+            ws.onmessage = function (event) {
+                document.getElementById('chat-box').value += `${event.data}\n\n`
+            }
+
             const app = Vue.createApp({
                 data() {
                     return {
@@ -106,16 +112,7 @@
                     send() {
                         let username = localStorage.getItem('User');
                         if (username) {
-                            fetch('/send', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'text/plain',
-                                    'User': username
-                                },
-                                body: this.message
-                            }).then(response => {
-                                if (response.ok) return response.text();
-                            }).then(text => document.getElementById('chat-box').value += text);
+                            ws.send(this.message)
                             this.message = '';
                         } else window.location.href = '/'
                     },

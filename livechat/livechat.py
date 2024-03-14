@@ -1,15 +1,22 @@
 import socket
 import threading
 from server import Server
+from chat import Chat
 
 host = socket.gethostbyname(socket.gethostname())
 
-port = 8000
+server_port = 8080
 
-server = Server(host, port)
+websocket_port = 9090
+
+server = Server(host, server_port)
+
+chat = Chat(host, websocket_port)
 
 server_thread = threading.Thread(target=server.start)
 
 server_thread.start()
+
+chat.start()
 
 server_thread.join()
