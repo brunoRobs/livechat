@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LiveChat</title>
+        <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
+            type="image/png">
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <div id="app">
+            <div id="chat-box">
+                <p class="message others">
+                    <span class="name">Outro</span>
+                    Olá! Esta é de outros.
+                </p>
+                <p class="message user">
+                    <span class="name">Eu</span>
+                    Olá! Esta é minha.
+                </p>
+            </div>
+            <div id="input-box">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message"
+                    @keydown.enter="pressEnter">
+                <div id="command">
+                    <button id="exit-button" class="command-button" @click="exit()">Exit</button>
+                    <button id="send-button" class="command-button" @click="send()" :disabled="isEmpty">Send</button>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+        <script>
+            const ws = new WebSocket('ws://192.168.0.5:9090');
+            var check = ''
+            ws.onmessage = function (event) {
+                const message = document.createElement('p');
+                const data = event.data.split('§=-=§')[1];
+                if (data !== check) {
+                    message.className = 'message others';
+                    const span = document.createElement('span');
+                    span.className = 'name';
+                    span.innerText = event.data.split('§=-=§')[0];
+                    message.appendChild(span);
+                }
+                else message.className = 'message user';
+                message.append(data);
+                document.getElementById('chat-box').appendChild(message);
+            }
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        message: ''
+                    };
+                },
+                computed: {
+                    isEmpty() {
+                        return !this.message
+                    }
+                },
+                methods: {
+                    pressEnter(event) {
+                        if (event.key === 'Enter' && !this.isEmpty) this.send();
+                    },
+                    send() {
+                        let username = localStorage.getItem('User');
+                        if (username) {
+                            check = this.message
+                            ws.send(`${localStorage.getItem('User')}§=-=§${this.message}`)
+                            this.message = '';
+                        } else window.location.href = '/'
+                    },
+                    exit() {
+                        let username = localStorage.getItem('User');
+                        fetch('/exit', {
+                            method: 'DELETE'
+                        }).then(response => {
+                            localStorage.removeItem('User');
+                            window.location.href = '/';
+                        });
+                    }
+                }
+            });
+            app.mount('#app');
+        </script>
+    </body>
+
+</html>

@@ -22,14 +22,13 @@ class Server:
     def _handler(self, client_socket): 
         request = client_socket.recv(1024).decode('utf-8')
         path = request.split('\r\n', 1)[0].split(' ')[1]
-        print(path)
         response = ''
 
         if path == '/': 
             response = self._add_code(200, 'OK')
-            response += self._add_header('Content-Length', len(self._read_content('livechat/index.html')))
+            response += self._add_header('Content-Length', len(self._read_content('livechat/public/index.html')))
             response += self._end_headers()
-            response += self._read_content('livechat/index.html').decode('utf-8')
+            response += self._read_content('livechat/public/index.html').decode('utf-8')
 
         elif path == '/login': 
             response = self._add_code(200, 'OK')
@@ -38,21 +37,32 @@ class Server:
 
         elif path == '/chat': 
             response = self._add_code(200, 'OK')
-            response += self._add_header('Content-Length', len(self._read_content('livechat/chat.html')))
+            response += self._add_header('Content-Length', len(self._read_content('livechat/public/chat.html')))
             response += self._end_headers()
-            response += self._read_content('livechat/chat.html').decode('utf-8')
-
+            response += self._read_content('livechat/public/chat.html').decode('utf-8')
         
         elif path == '/exit': 
             response = self._add_code(200, 'OK')
             response += self._add_header('Content-Length', 0)
             response += self._end_headers()
 
+        elif path == '/style.css': 
+            response = self._add_code(200, 'OK')
+            response += self._add_header('Content-Length', len(self._read_content('livechat/public/style.css')))
+            response += self._end_headers()
+            response += self._read_content('livechat/public/style.css').decode('utf-8')
+
+        elif path == '/index.js': 
+            response = self._add_code(200, 'OK')
+            response += self._add_header('Content-Length', len(self._read_content('livechat/index.js')))
+            response += self._end_headers()
+            response += self._read_content('livechat/index.js').decode('utf-8')
+
         else:
             response = self._add_code(404, 'Not Found')
-            response += self._add_header('Content-Length', len(self._read_content('livechat/not_found.html')))
+            response += self._add_header('Content-Length', len(self._read_content('livechat/public/not_found.html')))
             response += self._end_headers()
-            response += self._read_content('livechat/not_found.html').decode('utf-8')
+            response += self._read_content('livechat/public/not_found.html').decode('utf-8')
 
         client_socket.sendall(response.encode('utf-8'))
         client_socket.close()
