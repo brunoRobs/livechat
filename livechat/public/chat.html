@@ -1,83 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiveChat</title>
+    <link
+      rel="shortcut icon"
+      href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
+      type="image/png"
+    />
+    <link rel="stylesheet" href="style.css" />
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LiveChat</title>
-        <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/1372/PNG/512/chat-10_90886.png"
-            type="image/png">
-        <link rel="stylesheet" href="style.css">
-    </head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Protest+Guerrilla&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-    <body>
-        <div id="app">
-            <div id="chat-box">
-            </div>
-            <div id="input-box">
-                <input type="text" id="message-input" placeholder="Digite sua mensagem..." v-model="message"
-                    @keydown.enter="pressEnter">
-                <div id="command">
-                    <button id="exit-button" class="command-button" @click="exit()">Exit</button>
-                    <button id="send-button" class="command-button" @click="send()" :disabled="isEmpty">Send</button>
-                </div>
-            </div>
+  <body>
+    <div id="app">
+      <div id="chat-box"></div>
+      <div id="input-box">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Digite sua mensagem..."
+          v-model="message"
+          @keydown.enter="pressEnter"
+        />
+        <div id="command">
+          <button id="exit-button" class="command-button" @click="exit()">
+            <img
+              src="https://cdn.icon-icons.com/icons2/909/PNG/512/exit_icon-icons.com_70975.png"
+              height="15"
+            />
+            Exit
+          </button>
+          <button
+            id="send-button"
+            class="command-button"
+            @click="send()"
+            :disabled="isEmpty"
+          >
+            Send
+            <img
+              src="https://cdn.icon-icons.com/icons2/1369/PNG/512/-send_90420.png"
+              height="10"
+            />
+          </button>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
-        <script>
-            const host = document.URL.replace('http://', '').replace(':8080/chat', '');
-            const ws = new WebSocket(`ws://${host}:9090`);
-            var check = ''
-            ws.onmessage = function (event) {
-                const message = document.createElement('p');
-                const data = event.data.split('§=-=§')[1];
-                if (data !== check) {
-                    message.className = 'message others';
-                    const span = document.createElement('span');
-                    span.className = 'name';
-                    span.innerText = event.data.split('§=-=§')[0];
-                    message.appendChild(span);
-                }
-                else message.className = 'message user';
-                message.append(data);
-                document.getElementById('chat-box').appendChild(message);
-            }
-            const app = Vue.createApp({
-                data() {
-                    return {
-                        message: ''
-                    };
-                },
-                computed: {
-                    isEmpty() {
-                        return !this.message
-                    }
-                },
-                methods: {
-                    pressEnter(event) {
-                        if (event.key === 'Enter' && !this.isEmpty) this.send();
-                    },
-                    send() {
-                        let username = localStorage.getItem('User');
-                        if (username) {
-                            check = this.message
-                            ws.send(`${localStorage.getItem('User')}§=-=§${this.message}`)
-                            this.message = '';
-                        } else window.location.href = '/'
-                    },
-                    exit() {
-                        let username = localStorage.getItem('User');
-                        fetch('/exit', {
-                            method: 'DELETE'
-                        }).then(response => {
-                            localStorage.removeItem('User');
-                            window.location.href = '/';
-                        });
-                    }
-                }
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script>
+      const host = document.URL.replace("http://", "").replace(
+        ":8080/chat",
+        ""
+      );
+      const ws = new WebSocket(`ws://${host}:9090`);
+      var check = "";
+      ws.onmessage = function (event) {
+        const message = document.createElement("p");
+        const data = event.data.split("§=-=§")[1];
+        if (data !== check) {
+          message.className = "message others";
+          const span = document.createElement("span");
+          span.className = "name";
+          span.innerText = event.data.split("§=-=§")[0];
+          message.appendChild(span);
+        } else message.className = "message user";
+        message.append(data);
+        document.getElementById("chat-box").appendChild(message);
+      };
+      const app = Vue.createApp({
+        data() {
+          return {
+            message: "",
+          };
+        },
+        computed: {
+          isEmpty() {
+            return !this.message;
+          },
+        },
+        methods: {
+          pressEnter(event) {
+            if (event.key === "Enter" && !this.isEmpty) this.send();
+          },
+          send() {
+            let username = localStorage.getItem("User");
+            if (username) {
+              check = this.message;
+              ws.send(`${localStorage.getItem("User")}§=-=§${this.message}`);
+              this.message = "";
+            } else window.location.href = "/";
+          },
+          exit() {
+            let username = localStorage.getItem("User");
+            fetch("/exit", {
+              method: "DELETE",
+            }).then((response) => {
+              localStorage.removeItem("User");
+              window.location.href = "/";
             });
-            app.mount('#app');
-        </script>
-    </body>
-
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
 </html>

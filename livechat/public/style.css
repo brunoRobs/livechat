@@ -1,139 +1,149 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: "Josefin Slab", serif;
+}
+
+h1 {
+  font-family: "Protest Guerrilla", sans-serif;
+  text-align: center;
+  font-style: normal;
 }
 
 #app {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  padding: 20px;
 }
 
 .login-container {
-    width: 300px;
-    padding: 20px 0;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    align-items: center;
+  width: 300px;
+  padding: 20px 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  font-family: "Josefin Slab", serif;
 }
 
 .input-field {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .input-field label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .input-field input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .login-button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .login-button:enabled:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
 
 #input-box {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 #message-input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 #command {
-    padding: 20px;
-    display: flex;
-    justify-content: space-evenly;
+  padding: 20px;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .command-button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .command-button:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
 
 .command-button:disabled {
-    background-color: #686868;
-    cursor: default;
+  background-color: #686868;
+  cursor: default;
 }
 
 #chat-box {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 10px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    resize: none;
-    outline: none;
-    height: 60vh;
-    width: 300px;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  resize: none;
+  outline: none;
+  height: 60vh;
+  width: 300px;
+  overflow-y: auto;
+  font-family: "Josefin Slab", serif;
 }
 
 #chat-box::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .name {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 .message {
-    display: flex;
-    flex-direction: column;
-    color: white;
-    margin: 6px 0;
-    padding: 6px;
-    width: 67%;
-    border: 10px none;
-    border-radius: 10px;
-    text-align: justify;
-    word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  margin: 6px 0;
+  padding: 6px;
+  width: 67%;
+  border: 10px none;
+  border-radius: 10px;
+  text-align: justify;
+  word-wrap: break-word;
 }
 
 .message.user {
-    background-color: rgb(88, 157, 81);
-    align-self: flex-end;
+  background-color: rgb(88, 157, 81);
+  align-self: flex-end;
 }
 
 .message.others {
-    background-color: rgb(75, 75, 103);
+  background-color: rgb(75, 75, 103);
 }
