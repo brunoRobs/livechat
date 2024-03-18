@@ -25,7 +25,8 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
         <script>
-            const ws = new WebSocket('ws://192.168.0.5:9090');
+            const host = document.URL.replace('http://', '').replace(':8080/chat', '');
+            const ws = new WebSocket(`ws://${host}:9090`);
             var check = ''
             ws.onmessage = function (event) {
                 const message = document.createElement('p');
